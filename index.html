@@ -1,0 +1,1665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>For April - From Clark</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            font-family: 'Georgia', serif;
+            overflow: hidden;
+            background: #000;
+            color: white;
+            height: 100%;
+            width: 100%;
+            touch-action: none;
+        }
+
+        .page {
+            display: none;
+            width: 100%;
+            height: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            overflow: hidden;
+        }
+
+        .page.active {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* TEST BAR */
+        .test-bar {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #f9ca24;
+            border-radius: 10px;
+            padding: 8px;
+            z-index: 9999;
+            display: none;
+            flex-wrap: wrap;
+            gap: 4px;
+            max-width: 95vw;
+        }
+
+        .test-bar button {
+            background: #c44569;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        /* LOCK PAGE */
+        #lockPage {
+            position: relative;
+        }
+
+        /* DAY BACKGROUND - Blue sky with animated clouds */
+        .day-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, #4A90E2 0%, #87CEEB 40%, #B0E0E6 100%);
+            z-index: 0;
+            display: none;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        .day-bg.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* Animated Clouds */
+        .clouds-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            display: none;
+            pointer-events: none;
+        }
+
+        .clouds-container.active {
+            display: block;
+        }
+
+        .cloud {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 100px;
+            opacity: 0.9;
+        }
+
+        .cloud::before,
+        .cloud::after {
+            content: '';
+            position: absolute;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 100px;
+        }
+
+        .cloud1 {
+            width: 100px;
+            height: 40px;
+            top: 15%;
+            left: -150px;
+            animation: floatCloud 25s infinite linear;
+        }
+
+        .cloud1::before {
+            width: 50px;
+            height: 50px;
+            top: -25px;
+            left: 10px;
+        }
+
+        .cloud1::after {
+            width: 60px;
+            height: 40px;
+            top: -15px;
+            right: 10px;
+        }
+
+        .cloud2 {
+            width: 80px;
+            height: 35px;
+            top: 35%;
+            left: -120px;
+            animation: floatCloud 35s infinite linear;
+            animation-delay: -10s;
+        }
+
+        .cloud2::before {
+            width: 40px;
+            height: 40px;
+            top: -20px;
+            left: 15px;
+        }
+
+        .cloud2::after {
+            width: 50px;
+            height: 35px;
+            top: -10px;
+            right: 15px;
+        }
+
+        .cloud3 {
+            width: 120px;
+            height: 45px;
+            top: 60%;
+            left: -180px;
+            animation: floatCloud 30s infinite linear;
+            animation-delay: -5s;
+        }
+
+        .cloud3::before {
+            width: 60px;
+            height: 60px;
+            top: -30px;
+            left: 20px;
+        }
+
+        .cloud3::after {
+            width: 70px;
+            height: 45px;
+            top: -20px;
+            right: 20px;
+        }
+
+        .cloud4 {
+            width: 90px;
+            height: 38px;
+            top: 25%;
+            left: -140px;
+            animation: floatCloud 28s infinite linear;
+            animation-delay: -15s;
+        }
+
+        .cloud4::before {
+            width: 45px;
+            height: 45px;
+            top: -22px;
+            left: 12px;
+        }
+
+        .cloud4::after {
+            width: 55px;
+            height: 38px;
+            top: -12px;
+            right: 12px;
+        }
+
+        .cloud5 {
+            width: 110px;
+            height: 42px;
+            top: 75%;
+            left: -160px;
+            animation: floatCloud 32s infinite linear;
+            animation-delay: -20s;
+        }
+
+        .cloud5::before {
+            width: 55px;
+            height: 55px;
+            top: -28px;
+            left: 18px;
+        }
+
+        .cloud5::after {
+            width: 65px;
+            height: 42px;
+            top: -18px;
+            right: 18px;
+        }
+
+        @keyframes floatCloud {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(calc(100vw + 200px)); }
+        }
+
+        /* NIGHT BACKGROUND - Dark with shooting stars */
+        .night-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, #0a0a1a 0%, #1a1a3e 40%, #2d1b4e 100%);
+            z-index: 0;
+            display: none;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        .night-bg.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* Regular twinkling stars */
+        .stars-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            display: none;
+        }
+
+        .stars-container.active {
+            display: block;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        /* Shooting stars */
+        .shooting-stars-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            display: none;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .shooting-stars-container.active {
+            display: block;
+        }
+
+        .shooting-star {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 4px;
+            height: 4px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1), 0 0 0 8px rgba(255, 255, 255, 0.1), 0 0 20px rgba(255, 255, 255, 1);
+            animation: shoot 3s linear infinite;
+            opacity: 0;
+        }
+
+        .shooting-star::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 300px;
+            height: 1px;
+            background: linear-gradient(90deg, #fff, transparent);
+        }
+
+        .shooting-star:nth-child(1) {
+            top: 0;
+            right: 0;
+            left: initial;
+            animation-delay: 0s;
+            animation-duration: 2s;
+        }
+
+        .shooting-star:nth-child(2) {
+            top: 0;
+            right: 80px;
+            left: initial;
+            animation-delay: 0.5s;
+            animation-duration: 3s;
+        }
+
+        .shooting-star:nth-child(3) {
+            top: 80px;
+            right: 0;
+            left: initial;
+            animation-delay: 1s;
+            animation-duration: 2.5s;
+        }
+
+        .shooting-star:nth-child(4) {
+            top: 0;
+            right: 180px;
+            left: initial;
+            animation-delay: 1.5s;
+            animation-duration: 2s;
+        }
+
+        .shooting-star:nth-child(5) {
+            top: 0;
+            right: 300px;
+            left: initial;
+            animation-delay: 2s;
+            animation-duration: 3s;
+        }
+
+        @keyframes shoot {
+            0% {
+                transform: rotate(315deg) translateX(0);
+                opacity: 1;
+            }
+            70% {
+                opacity: 1;
+            }
+            100% {
+                transform: rotate(315deg) translateX(-1000px);
+                opacity: 0;
+            }
+        }
+
+        .lock-container {
+            text-align: center;
+            z-index: 10;
+            padding: 10px;
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            text-shadow: 0 0 20px rgba(255, 107, 157, 0.5);
+        }
+
+        .subtitle {
+            margin-bottom: 15px;
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        .countdown-box {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px;
+            margin: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .countdown-title {
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            color: #f9ca24;
+        }
+
+        .countdown {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .time-unit {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 8px 12px;
+            border-radius: 8px;
+            min-width: 55px;
+        }
+
+        .time-value {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #ff6b9d;
+            display: block;
+        }
+
+        .time-label {
+            font-size: 0.6rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-transform: uppercase;
+        }
+
+        .celestial-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+            position: relative;
+            height: 150px;
+        }
+
+        /* Sun Styles - Mobile Optimized */
+        .sun-wrapper {
+            position: relative;
+            display: none;
+        }
+
+        .sun-wrapper.show {
+            display: block;
+        }
+
+        .sun {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #FFD700, #FFA500, #FF6347);
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.6), 0 0 80px rgba(255, 140, 0, 0.4);
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s;
+            animation: sunPulse 4s ease-in-out infinite;
+        }
+
+        @keyframes sunPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .sun-rays {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200%;
+            height: 200%;
+            animation: sunRotate 20s linear infinite;
+        }
+
+        @keyframes sunRotate {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .sun-ray {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 3px;
+            height: 50%;
+            background: linear-gradient(to bottom, rgba(255, 215, 0, 0.8), transparent);
+            transform-origin: center top;
+            margin-left: -1.5px;
+        }
+
+        .sun-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300%;
+            height: 300%;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.3) 0%, transparent 70%);
+            z-index: -1;
+            animation: glowPulse 4s ease-in-out infinite;
+        }
+
+        /* Moon Styles - Mobile Optimized */
+        .moon-wrapper {
+            position: relative;
+            display: none;
+        }
+
+        .moon-wrapper.show {
+            display: block;
+        }
+
+        .moon {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #F5F5F5, #E0E0E0);
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.5), inset -10px -10px 20px rgba(0, 0, 0, 0.2);
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s;
+            overflow: hidden;
+            animation: moonFloat 6s ease-in-out infinite;
+        }
+
+        @keyframes moonFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .moon-shadow {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            border-radius: 50%;
+            transition: transform 0.5s;
+        }
+
+        .new-moon .moon-shadow { transform: translateX(0); }
+        .waxing-crescent .moon-shadow { transform: translateX(70%); }
+        .first-quarter .moon-shadow { transform: translateX(50%); }
+        .waxing-gibbous .moon-shadow { transform: translateX(20%); }
+        .full-moon .moon-shadow { transform: translateX(100%); }
+
+        .moon-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 250%;
+            height: 250%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+            z-index: -1;
+            animation: glowPulse 4s ease-in-out infinite;
+        }
+
+        .celestial-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 15px;
+            border-radius: 12px;
+            border: 2px solid #f9ca24;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s;
+            width: 260px;
+            font-style: italic;
+            z-index: 100;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .celestial-message.show {
+            opacity: 1;
+        }
+
+        .lock-hint {
+            margin-top: 15px;
+            font-size: 0.85rem;
+            opacity: 0.8;
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 0.4; }
+        }
+
+        .phase-indicator {
+            margin-top: 8px;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Unlock Button */
+        .unlock-btn {
+            display: none;
+            margin-top: 20px;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #ff6b9d, #c44569);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            animation: pulseBtn 2s infinite;
+            box-shadow: 0 0 20px rgba(255, 107, 157, 0.5);
+            z-index: 20;
+            position: relative;
+        }
+
+        .unlock-btn.show {
+            display: inline-block;
+        }
+
+        @keyframes pulseBtn {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 107, 157, 0.5); }
+            50% { transform: scale(1.05); box-shadow: 0 0 30px rgba(255, 107, 157, 0.8); }
+        }
+
+        .unlock-message {
+            display: none;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: rgba(249, 202, 36, 0.2);
+            border: 2px solid #f9ca24;
+            border-radius: 15px;
+            color: #f9ca24;
+            font-size: 1rem;
+            animation: fadeIn 1s ease;
+        }
+
+        .unlock-message.show {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* MESSAGE PAGE */
+        #messagePage {
+            background: linear-gradient(180deg, #0a1628 0%, #1a2a3a 50%, #2a3a4a 100%);
+        }
+
+        .fireflies-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .firefly {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: #ccff00;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #ccff00, 0 0 15px #ccff00;
+            animation: fly 8s infinite;
+        }
+
+        @keyframes fly {
+            0%, 100% { transform: translate(0, 0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)); opacity: 0; }
+        }
+
+        .message-container {
+            z-index: 10;
+            text-align: center;
+            padding: 15px;
+            width: 100%;
+        }
+
+        .book-wrapper {
+            position: relative;
+            width: 280px;
+            height: 180px;
+            margin: 0 auto;
+            perspective: 1000px;
+        }
+
+        .book {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+        }
+
+        .book.open {
+            transform: rotateY(-30deg);
+        }
+
+        .book-cover {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #8b4513 0%, #654321 100%);
+            border-radius: 5px;
+            z-index: 3;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            transform-origin: left;
+            transition: transform 0.6s;
+        }
+
+        .book.open .book-cover {
+            transform: rotateY(-160deg);
+        }
+
+        .book-body {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #d2b48c 0%, #c19a6b 100%);
+            border-radius: 5px;
+            z-index: 1;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .wax-seal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            background: radial-gradient(circle at 30% 30%, #c44569, #8b2635);
+            border-radius: 50%;
+            z-index: 4;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all 0.3s;
+        }
+
+        .wax-seal:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        .wax-seal.broken {
+            animation: sealBreak 0.5s forwards;
+        }
+
+        @keyframes sealBreak {
+            0% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.2); }
+            100% { transform: translate(-50%, -50%) scale(0) rotate(180deg); opacity: 0; }
+        }
+
+        .letter {
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            width: 80%;
+            height: 80%;
+            background: linear-gradient(135deg, #fef9e7 0%, #f5e6c8 100%);
+            border-radius: 5px;
+            padding: 15px;
+            color: #3d2817;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.5;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s 0.3s;
+            overflow-y: auto;
+            max-height: 250px;
+            text-align: left;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            z-index: 2;
+        }
+
+        .letter.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1.2em;
+            background: #3d2817;
+            animation: blink-cursor 0.8s infinite;
+            vertical-align: text-bottom;
+        }
+
+        @keyframes blink-cursor {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .shake-hint {
+            margin-top: 15px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 8px 15px;
+            border-radius: 15px;
+            border: 2px solid #f9ca24;
+            color: #f9ca24;
+            font-size: 0.8rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+            display: inline-block;
+        }
+
+        .shake-hint.show {
+            opacity: 1;
+        }
+
+        .shake-active {
+            animation: shakePhone 0.8s ease-in-out;
+        }
+
+        @keyframes shakePhone {
+            0%, 100% { transform: translateX(0) rotate(0deg); }
+            10% { transform: translateX(-10px) rotate(-5deg); }
+            20% { transform: translateX(10px) rotate(5deg); }
+            30% { transform: translateX(-10px) rotate(-5deg); }
+            40% { transform: translateX(10px) rotate(5deg); }
+            50% { transform: translateX(-10px) rotate(-5deg); }
+            60% { transform: translateX(10px) rotate(5deg); }
+            70% { transform: translateX(-10px) rotate(-5deg); }
+            80% { transform: translateX(10px) rotate(5deg); }
+            90% { transform: translateX(-5px) rotate(-2deg); }
+        }
+
+        .continue-btn {
+            display: none;
+            margin-top: 20px;
+            padding: 12px 30px;
+            background: transparent;
+            border: 2px solid #ccff00;
+            color: #ccff00;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 25px;
+            transition: all 0.3s;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        .continue-btn.show {
+            display: inline-block;
+            animation: fadeInBtn 0.5s forwards;
+        }
+
+        @keyframes fadeInBtn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .continue-btn:hover {
+            background: #ccff00;
+            color: #0a1628;
+            box-shadow: 0 0 20px #ccff00;
+        }
+
+        /* INVESTIGATION PAGE */
+        #investigationPage {
+            background: linear-gradient(90deg, #0a0a1a 0%, #1a1a3e 50%, #2d1b4e 100%);
+        }
+
+        .split-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .split-left {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding: 10px;
+        }
+
+        .split-right {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+        }
+
+        .investigation-moon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #fff, #e6e6e6);
+            box-shadow: 0 0 40px rgba(255,255,255,0.4), inset -8px -8px 20px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: transform 0.3s;
+            animation: moonGlow 4s ease-in-out infinite;
+        }
+
+        @keyframes moonGlow {
+            0%, 100% { box-shadow: 0 0 40px rgba(255,255,255,0.4); }
+            50% { box-shadow: 0 0 60px rgba(255,255,255,0.6); }
+        }
+
+        .investigation-sun {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #ffd700, #ff8c00);
+            box-shadow: 0 0 40px rgba(255,215,0,0.5);
+            cursor: pointer;
+            transition: transform 0.3s;
+            animation: sunGlow 4s ease-in-out infinite;
+        }
+
+        @keyframes sunGlow {
+            0%, 100% { box-shadow: 0 0 40px rgba(255,215,0,0.5); }
+            50% { box-shadow: 0 0 60px rgba(255,215,0,0.7); }
+        }
+
+        .investigation-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 100;
+            background: rgba(0,0,0,0.9);
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #f9ca24;
+            width: 90%;
+            max-width: 320px;
+        }
+
+        .investigation-title {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: #f9ca24;
+        }
+
+        .investigation-text {
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+
+        .hint-text {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.6);
+            margin-top: 10px;
+            min-height: 30px;
+        }
+
+        .date-selector {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .date-select {
+            padding: 8px;
+            border-radius: 8px;
+            border: 2px solid #f9ca24;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            font-size: 0.85rem;
+            cursor: pointer;
+            min-width: 70px;
+        }
+
+        .date-select option {
+            background: #1a1a3e;
+            color: white;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #ff6b9d, #c44569);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(196, 69, 105, 0.4);
+        }
+
+        .unlock-animation {
+            display: none;
+            margin-top: 15px;
+        }
+
+        .unlock-animation.show {
+            display: block;
+            animation: unlockGlow 2s ease-in-out;
+        }
+
+        @keyframes unlockGlow {
+            0% { transform: scale(0.8); opacity: 0; }
+            50% { transform: scale(1.2); filter: drop-shadow(0 0 20px #f9ca24); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #fff, 0 0 20px #64b5f6;
+            animation: particleFloat 10s infinite linear;
+        }
+
+        @keyframes particleFloat {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) scale(1.5); opacity: 0; }
+        }
+
+        /* CONFESSION PAGE */
+        #confessionPage {
+            background: linear-gradient(180deg, #f5e6d3 0%, #e6d2b5 50%, #d4b896 100%);
+        }
+
+        .paper-hearts-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .paper-heart {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #ffffff;
+            transform: rotate(-45deg);
+            box-shadow: 0 0 20px rgba(255,255,255,0.8), 0 0 40px rgba(255,255,255,0.4);
+            animation: heartFloat 12s infinite;
+        }
+
+        .paper-heart::before,
+        .paper-heart::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #ffffff;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(255,255,255,0.6);
+        }
+
+        .paper-heart::before {
+            top: -10px;
+            left: 0;
+        }
+
+        .paper-heart::after {
+            left: 10px;
+            top: 0;
+        }
+
+        @keyframes heartFloat {
+            0%, 100% { transform: rotate(-45deg) translateY(0) translateX(0); opacity: 0.8; }
+            25% { transform: rotate(-40deg) translateY(-15px) translateX(8px); }
+            50% { transform: rotate(-50deg) translateY(-30px) translateX(-8px); opacity: 0.6; }
+            75% { transform: rotate(-45deg) translateY(-15px) translateX(4px); }
+        }
+
+        .confession-container {
+            z-index: 10;
+            text-align: center;
+            padding: 15px;
+            width: 100%;
+        }
+
+        .love-card {
+            background: rgba(255, 250, 240, 0.95);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+            color: #5d4037;
+            position: relative;
+            overflow: hidden;
+            max-width: 350px;
+            margin: 0 auto;
+        }
+
+        .heart-beat {
+            font-size: 60px;
+            cursor: pointer;
+            display: inline-block;
+            animation: heartbeat 1.5s ease-in-out infinite;
+            transition: transform 0.3s;
+            margin: 15px 0;
+            filter: drop-shadow(0 0 15px rgba(196, 69, 105, 0.4));
+        }
+
+        .heart-beat:hover {
+            transform: scale(1.2);
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(1.1); }
+            50% { transform: scale(1); }
+            75% { transform: scale(1.15); }
+        }
+
+        .rotating-message {
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-style: italic;
+            margin: 15px 0;
+            padding: 15px;
+            background: rgba(255, 140, 0, 0.15);
+            border-radius: 12px;
+            transition: opacity 0.5s;
+            border: 1px solid rgba(205, 133, 63, 0.3);
+        }
+
+        .special-line {
+            color: #8b4513;
+            font-weight: bold;
+            text-shadow: 0 0 8px rgba(139, 90, 43, 0.3);
+            animation: pulse 2s ease-in-out infinite;
+            display: block;
+            margin: 8px 0;
+            font-size: 0.95rem;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .confession-continue-btn {
+            display: none;
+            margin-top: 20px;
+            padding: 12px 30px;
+            background: transparent;
+            border: 2px solid #8b6914;
+            color: #8b6914;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 25px;
+            transition: all 0.3s;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        .confession-continue-btn.show {
+            display: inline-block;
+            animation: fadeInBtn 0.5s forwards;
+        }
+
+        .confession-continue-btn:hover {
+            background: #8b6914;
+            color: #fff;
+        }
+
+        /* GAME PAGE - MOBILE OPTIMIZED */
+        #gamePage {
+            background: linear-gradient(135deg, #fff5e6 0%, #ffe0cc 50%, #ffccb3 100%);
+        }
+
+        .game-container {
+            z-index: 10;
+            text-align: center;
+            padding: 10px;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .game-stat {
+            background: rgba(255, 255, 255, 0.4);
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-size: 1rem;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            color: #5d4037;
+            min-width: 70px;
+        }
+
+        .game-canvas-container {
+            position: relative;
+            margin: 10px auto;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            border: 3px solid rgba(255, 255, 255, 0.6);
+            width: 95%;
+            max-width: 400px;
+        }
+
+        #gameCanvas {
+            display: block;
+            background: linear-gradient(180deg, #74b9ff 0%, #a29bfe 100%);
+            width: 100%;
+            height: auto;
+            touch-action: none;
+        }
+
+        /* ASCII PAGE */
+        #asciiPage {
+            background: linear-gradient(135deg, #3e2723 0%, #5d4037 50%, #4e342e 100%);
+        }
+
+        .ascii-container {
+            z-index: 10;
+            text-align: center;
+            padding: 15px;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .ascii-art-container {
+            background: rgba(0, 0, 0, 0.7);
+            border: 3px solid #f9ca24;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 15px 0;
+            display: none;
+            max-width: 95vw;
+            max-height: 60vh;
+            overflow: auto;
+        }
+
+        .ascii-art {
+            font-family: 'Courier New', monospace;
+            font-size: 10px;
+            line-height: 10px;
+            white-space: pre;
+            color: #f5e6d3;
+            overflow-x: auto;
+        }
+
+        .zoom-controls {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .zoom-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #f9ca24;
+            color: #f9ca24;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s;
+        }
+
+        .zoom-btn:hover {
+            background: #f9ca24;
+            color: #000;
+        }
+
+        .zoom-level {
+            font-size: 1rem;
+            min-width: 50px;
+            color: #f5e6d3;
+        }
+
+        /* Desktop adjustments - only for larger screens */
+        @media (min-width: 768px) {
+            .page-title {
+                font-size: 2.2rem;
+            }
+
+            .celestial-container {
+                height: 180px;
+            }
+
+            .sun {
+                width: 120px;
+                height: 120px;
+            }
+
+            .moon {
+                width: 100px;
+                height: 100px;
+            }
+
+            .book-wrapper {
+                width: 320px;
+                height: 200px;
+            }
+
+            .split-container {
+                flex-direction: row;
+            }
+
+            .split-left {
+                border-bottom: none;
+                border-right: 1px solid rgba(255,255,255,0.1);
+            }
+
+            .investigation-center {
+                max-width: 350px;
+            }
+
+            .game-canvas-container {
+                max-width: 500px;
+            }
+        }
+    </style>
+<base target="_blank">
+<base target="_blank">
+</head>
+<body>
+    <!-- TEST BAR -->
+    <div class="test-bar" id="testBar">
+        <button onclick="goToPage(0)">Lock</button>
+        <button onclick="goToPage(1)">Message</button>
+        <button onclick="goToPage(2)">Investigation</button>
+        <button onclick="goToPage(3)">Confession</button>
+        <button onclick="goToPage(4)">Game</button>
+        <button onclick="goToPage(5)">ASCII</button>
+    </div>
+
+    <!-- PAGE 0: LOCK PAGE -->
+    <div class="page active" id="lockPage">
+        <!-- Day Background -->
+        <div class="day-bg" id="dayBg"></div>
+
+        <!-- Night Background -->
+        <div class="night-bg" id="nightBg"></div>
+
+        <!-- Moving Clouds (Day only) -->
+        <div class="clouds-container" id="cloudsContainer">
+            <div class="cloud cloud1"></div>
+            <div class="cloud cloud2"></div>
+            <div class="cloud cloud3"></div>
+            <div class="cloud cloud4"></div>
+            <div class="cloud cloud5"></div>
+        </div>
+
+        <!-- Twinkling Stars (Night only) -->
+        <div class="stars-container" id="starsContainer"></div>
+
+        <!-- Shooting Stars (Night only) -->
+        <div class="shooting-stars-container" id="shootingStarsContainer">
+            <div class="shooting-star"></div>
+            <div class="shooting-star"></div>
+            <div class="shooting-star"></div>
+            <div class="shooting-star"></div>
+            <div class="shooting-star"></div>
+        </div>
+
+        <div class="lock-container">
+            <h1 class="page-title" id="lockTitle">For April</h1>
+            <p class="subtitle" id="lockSubtitle">From Clark, with love</p>
+
+            <div class="countdown-box">
+                <div class="countdown-title" id="countdownTitle">Counting down to your special day</div>
+                <div class="countdown">
+                    <div class="time-unit">
+                        <span class="time-value" id="days">00</span>
+                        <span class="time-label">Days</span>
+                    </div>
+                    <div class="time-unit">
+                        <span class="time-value" id="hours">00</span>
+                        <span class="time-label">Hours</span>
+                    </div>
+                    <div class="time-unit">
+                        <span class="time-value" id="minutes">00</span>
+                        <span class="time-label">Minutes</span>
+                    </div>
+                    <div class="time-unit">
+                        <span class="time-value" id="seconds">00</span>
+                        <span class="time-label">Seconds</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="celestial-container" id="celestialContainer">
+                <!-- Sun - shown in morning -->
+                <div class="sun-wrapper" id="sunWrapper">
+                    <div class="sun" id="sun">
+                        <div class="sun-rays" id="sunRays"></div>
+                    </div>
+                    <div class="sun-glow"></div>
+                </div>
+                <!-- Moon - shown at night -->
+                <div class="moon-wrapper" id="moonWrapper">
+                    <div class="moon" id="moon">
+                        <div class="moon-shadow" id="moonShadow"></div>
+                    </div>
+                    <div class="moon-glow"></div>
+                </div>
+            </div>
+            <div class="celestial-message" id="celestialMessage"></div>
+            <p class="lock-hint" id="lockHint">Tap the Sun or Moon</p>
+            <p class="phase-indicator" id="phaseIndicator"></p>
+
+            <!-- Unlock Message and Button -->
+            <div class="unlock-message" id="unlockMessage">🎉 The wait is over! Your special day has arrived! 🎉</div>
+            <button class="unlock-btn" id="unlockBtn" onclick="goToPage(1)">Click to Continue ❤</button>
+        </div>
+    </div>
+
+    <!-- PAGE 1: MESSAGE PAGE -->
+    <div class="page" id="messagePage">
+        <div class="fireflies-container" id="firefliesContainer"></div>
+        <div class="message-container">
+            <h1 class="page-title" id="messageTitle" style="color: #e8f4f8;">A Letter For You</h1>
+
+            <div class="book-wrapper" id="bookWrapper">
+                <div class="book" id="book">
+                    <div class="book-cover"></div>
+                    <div class="book-body"></div>
+                    <div class="wax-seal" id="waxSeal">🌙</div>
+                </div>
+                <div class="letter" id="letter">
+                    <div class="letter-content" id="letterContent"></div>
+                    <span class="cursor" id="cursor"></span>
+                </div>
+            </div>
+
+            <div class="shake-hint" id="shakeHint">📱 Shake to open</div>
+            <button class="continue-btn" id="messageContinueBtn" onclick="goToPage(2)">Continue →</button>
+        </div>
+    </div>
+
+    <!-- PAGE 2: INVESTIGATION PAGE -->
+    <div class="page" id="investigationPage">
+        <canvas id="taurusCanvas" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none;"></canvas>
+        <div id="investigationParticles" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none;"></div>
+
+        <div class="split-container">
+            <div class="split-left">
+                <div class="investigation-moon" id="investigationMoon"></div>
+                <p style="margin-top: 15px; color: rgba(255,255,255,0.7); font-style: italic; font-size: 0.8rem;" id="moonSideText">The night holds memories</p>
+            </div>
+            <div class="split-right">
+                <div class="investigation-sun" id="investigationSun"></div>
+                <p style="margin-top: 15px; color: rgba(255,215,0,0.7); font-style: italic; font-size: 0.8rem;" id="sunSideText">The day reveals truth</p>
+            </div>
+            <div class="investigation-center">
+                <h2 class="investigation-title" id="investigationTitle">The Memory</h2>
+                <p class="investigation-text" id="investigationQuote">"Remember when I confessed..."</p>
+                <p style="font-size: 0.8rem; color: rgba(255,255,255,0.6); margin-bottom: 10px;" id="investigationQuestion">When did that moment happen?</p>
+
+                <div class="date-selector" id="dateSelector">
+                    <select class="date-select" id="yearSelect">
+                        <option value="">Year</option>
+                        <option value="2025">2025</option>
+                        <option value="2026">2026</option>
+                        <option value="2027">2027</option>
+                    </select>
+                    <select class="date-select" id="monthSelect">
+                        <option value="">Month</option>
+                        <option value="01">Jan</option>
+                        <option value="02">Feb</option>
+                        <option value="03">Mar</option>
+                        <option value="04">Apr</option>
+                        <option value="05">May</option>
+                        <option value="06">Jun</option>
+                        <option value="07">Jul</option>
+                        <option value="08">Aug</option>
+                        <option value="09">Sep</option>
+                        <option value="10">Oct</option>
+                        <option value="11">Nov</option>
+                        <option value="12">Dec</option>
+                    </select>
+                    <select class="date-select" id="daySelect">
+                        <option value="">Day</option>
+                        <option value="01">1</option>
+                        <option value="02">2</option>
+                        <option value="03">3</option>
+                        <option value="04">4</option>
+                        <option value="05">5</option>
+                        <option value="06">6</option>
+                        <option value="07">7</option>
+                        <option value="08">8</option>
+                        <option value="09">9</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                        <option value="13">13</option>
+                        <option value="14">14</option>
+                        <option value="15">15</option>
+                        <option value="16">16</option>
+                        <option value="17">17</option>
+                        <option value="18">18</option>
+                        <option value="19">19</option>
+                        <option value="20">20</option>
+                        <option value="21">21</option>
+                        <option value="22">22</option>
+                        <option value="23">23</option>
+                        <option value="24">24</option>
+                        <option value="25">25</option>
+                        <option value="26">26</option>
+                        <option value="27">27</option>
+                        <option value="28">28</option>
+                        <option value="29">29</option>
+                        <option value="30">30</option>
+                        <option value="31">31</option>
+                    </select>
+                </div>
+
+                <button class="btn" id="investigateBtn" onclick="checkDate()">Unlock Memory</button>
+                <p class="hint-text" id="hintText">Touch moon or sun for hints...</p>
+                <div class="unlock-animation" id="unlockAnimation">
+                    <div style="font-size: 40px;">🔓</div>
+                    <p style="margin-top: 10px; color: #f9ca24; font-size: 1rem;">Memory Unlocked!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE 3: CONFESSION PAGE -->
+    <div class="page" id="confessionPage">
+        <div class="paper-hearts-container" id="paperHeartsContainer"></div>
+        <div class="confession-container">
+            <div class="love-card">
+                <h1 class="page-title" id="confessionTitle" style="color: #5d4037; font-size: 1.5rem;">My Heart Speaks</h1>
+
+                <div class="heart-beat" id="heartBeat">❤</div>
+
+                <div class="rotating-message" id="rotatingMessage">Tap the heart</div>
+
+                <p style="margin-top: 15px; font-size: 0.9rem; line-height: 1.6; color: #5d4037;">
+                    <span id="confessionMain">April, every moment with you is a treasure.</span>
+                    <span class="special-line" id="specialLine1">You are my sun, my moon, and all my stars.</span>
+                    <span id="confessionClosing">From the first day I met you, I knew my life would never be the same.</span>
+                    <span class="special-line" id="specialLine2">I love you more than words can express.</span>
+                </p>
+
+                <button class="confession-continue-btn" id="confessionContinueBtn" onclick="goToPage(4)">Continue →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE 4: GAME PAGE -->
+    <div class="page" id="gamePage">
+        <div class="game-container">
+            <h1 class="page-title" id="gameTitle" style="color: #5d4037; font-size: 1.5rem; margin-bottom: 10px;">Catch My Heart</h1>
+
+            <div class="game-header">
+                <div class="game-stat">
+                    <div style="font-size: 0.7rem; color: rgba(93, 64, 55, 0.8); text-transform: uppercase;">Score</div>
+                    <div id="scoreDisplay">0/10 🍦</div>
+                </div>
+                <div class="game-stat">
+                    <div style="font-size: 0.7rem; color: rgba(93, 64, 55, 0.8); text-transform: uppercase;">Time</div>
+                    <div id="timeDisplay">30</div>
+                </div>
+                <div class="game-stat">
+                    <div style="font-size: 0.7rem; color: rgba(93, 64, 55, 0.8); text-transform: uppercase;">Combo</div>
+                    <div id="comboDisplay">x1</div>
+                </div>
+            </div>
+
+            <div class="game-canvas-container" id="gameCanvasContainer">
+                <canvas id="gameCanvas"></canvas>
+            </div>
+
+            <div style="margin-top: 15px;">
+                <button class="btn" id="startGameBtn" onclick="startGame()">Start Game</button>
+                <button class="btn" id="retryBtn" onclick="resetGame()" style="display: none; background: linear-gradient(135deg, #e74c3c, #c0392b);">Try Again</button>
+                <button class="btn" id="winBtn" onclick="goToPage(5)" style="display: none; background: linear-gradient(135deg, #2ecc71, #27ae60);">Continue ❤</button>
+            </div>
+
+            <p style="margin-top: 10px; opacity: 0.8; font-size: 0.75rem; color: #5d4037;" id="gameInstructions">
+                Catch 10 Ice Creams 🍦 Avoid Cold ❄️<br>
+                Drag to move the bowl
+            </p>
+        </div>
+    </div>
+
+    <!-- PAGE 5: ASCII PAGE -->
+    <div class="page" id="asciiPage">
+        <div class="ascii-container">
+            <h1 class="page-title" id="asciiTitle" style="color: #f5e6d3; font-size: 1.5rem;">My Final Message</h1>
+
+            <div class="ascii-art-container" id="asciiContainer">
+                <div class="ascii-art" id="asciiArt"></div>
+            </div>
+
+            <div class="zoom-controls" id="zoomControls">
+                <button class="zoom-btn" onclick="adjustZoom(-0.2)">−</button>
+                <span class="zoom-level" id="zoomLevel">100%</span>
+                <button class="zoom-btn" onclick="adjustZoom(0.2)">+</button>
+            </div>
+
+            <button class="btn" id="revealArtBtn" onclick="generateASCIIArt()" style="margin-top: 15px; padding: 10px 20px; font-size: 0.85rem;">Reveal Art</button>
+            <button class="btn" id="restartBtn" onclick="goToPage(0)" style="margin-top: 8px; background: linear-gradient(135deg, #9b59b6, #8e44ad); padding: 10px 20px; font-size: 0.85rem;">Start Again ↺</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

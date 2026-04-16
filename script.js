@@ -15,7 +15,7 @@ const CONFIG = {
     FAKE_INITIAL_DATE: '2026-03-15',
 
     // Hidden image URL for ASCII art
-    ASCII_IMAGE_URL: 'https://picsum.photos/400/400',
+    ASCII_IMAGE_URL: 'https://github.com/Munniaki/photos/blob/fa118db83794f1af1bbd7af63e5d3cd4aa504cae/IMG_20260315_221702_910.jpg',
 
     // LOCK PAGE - SUN MESSAGES (Compliments connected to Sun)
     SUN_MESSAGES: [

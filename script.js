@@ -14,8 +14,8 @@ const CONFIG = {
     // Fake initial date shown to user
     FAKE_INITIAL_DATE: '2026-03-15',
 
-    // Hidden image URL for ASCII art
-    ASCII_IMAGE_URL: 'https://github.com/Munniaki/photos/blob/fa118db83794f1af1bbd7af63e5d3cd4aa504cae/IMG_20260315_221702_910.jpg',
+    // IMGUR IMAGE URL - Replace with your actual Imgur link
+    ASCII_IMAGE_URL: 'https://i.imgur.com/AbCdEfG.jpg',
 
     // LOCK PAGE - SUN MESSAGES (Compliments connected to Sun)
     SUN_MESSAGES: [
@@ -226,7 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initConfessionPage();
     initGame();
 
-    // Preload ASCII art image
+    // Preload ASCII art image from Imgur
     preloadASCIIArtImage();
 
     // Check unlock status periodically
@@ -289,7 +289,7 @@ function initLockPage() {
     const sunWrapper = document.getElementById('sunWrapper');
     const moonWrapper = document.getElementById('moonWrapper');
 
-    // Reset all backgrounds first
+    
     if (dayBg) dayBg.classList.remove('active');
     if (nightBg) nightBg.classList.remove('active');
     if (cloudsContainer) cloudsContainer.classList.remove('active');
@@ -1177,22 +1177,27 @@ function resetGame() {
 }
 
 // ============================================
-// ASCII PAGE - FIXED TO USE "I MISS YOU" LETTERS
+// ASCII PAGE - "I MISS YOU" PIXEL ART FROM IMGUR IMAGE
 // ============================================
 function preloadASCIIArtImage() {
     asciiImageElement = new Image();
+    
+    // Note: crossOrigin is tricky with Imgur, we'll handle errors gracefully
     asciiImageElement.crossOrigin = "anonymous";
 
     asciiImageElement.onload = function() {
         asciiImageLoaded = true;
+        console.log("Imgur image loaded successfully!");
     };
 
     asciiImageElement.onerror = function() {
+        console.log("Imgur image failed to load, will use fallback");
         asciiImageLoaded = false;
     };
 
-    const imageUrl = CONFIG.ASCII_IMAGE_URL + '?t=' + Date.now();
-    asciiImageElement.src = imageUrl;
+    // Use Imgur URL from CONFIG
+    // IMPORTANT: Replace 'https://i.imgur.com/AbCdEfG.jpg' with your actual Imgur link
+    asciiImageElement.src = CONFIG.ASCII_IMAGE_URL;
 }
 
 function generateASCIIArt() {
@@ -1203,15 +1208,17 @@ function generateASCIIArt() {
     if (container) container.style.display = 'block';
     if (zoomControls) zoomControls.style.display = 'flex';
 
-    if (asciiImageLoaded && asciiImageElement) {
+    // Try to use Imgur image first
+    if (asciiImageLoaded && asciiImageElement && asciiImageElement.complete && asciiImageElement.naturalWidth > 0) {
         try {
             generateIMISSYOUArtFromImage();
             return;
         } catch (e) {
-            console.log('Error generating I MISS YOU ASCII:', e);
+            console.log('Error generating from Imgur image:', e);
         }
     }
 
+    // Fallback to color gradient if image fails
     generateFallbackASCII();
 }
 
@@ -1222,9 +1229,10 @@ function generateIMISSYOUArtFromImage() {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
 
-    // Set ASCII resolution - smaller for better performance but still recognizable
-    const asciiWidth = 60;
-    const asciiHeight = Math.floor((asciiImageElement.height / asciiImageElement.width) * asciiWidth * 0.5);
+    // Set ASCII resolution - higher for better detail
+    const asciiWidth = 70;
+    const aspectRatio = asciiImageElement.height / asciiImageElement.width;
+    const asciiHeight = Math.floor(asciiWidth * aspectRatio * 0.5);
 
     canvas.width = asciiWidth;
     canvas.height = asciiHeight;
@@ -1236,14 +1244,16 @@ function generateIMISSYOUArtFromImage() {
     try {
         imageData = ctx.getImageData(0, 0, asciiWidth, asciiHeight);
     } catch (e) {
+        // CORS error or other issue - use fallback
+        console.log('Canvas error (likely CORS):', e);
         generateFallbackASCII();
         return;
     }
 
     const data = imageData.data;
 
-    // The message to use as pixels
-    const message = "I MISS YOU ";
+    // The message "IMISSYOU" - continuous string cycling through
+    const message = "IMISSYOU";
     let messageIndex = 0;
 
     let html = '';
@@ -1256,16 +1266,27 @@ function generateIMISSYOUArtFromImage() {
             const b = data[offset + 2];
             const alpha = data[offset + 3];
 
-            // Get next character from message
+            // Get next character from message (cycles through I-M-I-S-S-Y-O-U)
             const char = message[messageIndex % message.length];
             messageIndex++;
 
             // Skip transparent pixels
-            if (alpha < 128) {
-                html += '<span style="color: transparent">' + char + '</span>';
+            if (alpha < 50) {
+                html += '<span style="color: transparent">I</span>';
             } else {
                 // Use the original pixel color for this character
-                html += `<span style="color: rgb(${r},${g},${b})">${char}</span>`;
+                // Ensure minimum brightness for visibility
+                const brightness = (r + g + b) / 3;
+                const minBrightness = 30;
+                
+                let finalR = r, finalG = g, finalB = b;
+                if (brightness < minBrightness) {
+                    finalR = Math.max(r, minBrightness);
+                    finalG = Math.max(g, minBrightness);
+                    finalB = Math.max(b, minBrightness);
+                }
+                
+                html += `<span style="color: rgb(${finalR},${finalG},${finalB})">${char}</span>`;
             }
         }
         html += '<br>';
@@ -1278,21 +1299,27 @@ function generateFallbackASCII() {
     const asciiArt = document.getElementById('asciiArt');
     if (!asciiArt) return;
 
-    const colors = ['#ff6b9d', '#f9ca24', '#6c5ce7', '#00b894', '#e17055', '#74b9ff'];
-    const message = "I MISS YOU ";
+    // Create a colorful gradient "I MISS YOU" pattern
+    const width = 60;
+    const height = 40;
+    const message = "IMISSYOU";
+    let messageIndex = 0;
 
     let html = '';
-    const rows = 20;
-    const cols = 6;
-    let charIndex = 0;
 
-    for (let y = 0; y < rows; y++) {
-        const color = colors[y % colors.length];
-        let line = '';
-        for (let x = 0; x < cols; x++) {
-            line += message;
+    for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+            // Create sunset-like gradient
+            const r = Math.floor(100 + (y / height) * 155);
+            const g = Math.floor(50 + Math.sin(x * 0.1) * 100);
+            const b = Math.floor(150 + (1 - y / height) * 105);
+            
+            const char = message[messageIndex % message.length];
+            messageIndex++;
+            
+            html += `<span style="color: rgb(${r},${g},${b})">${char}</span>`;
         }
-        html += `<span style="color: ${color}">${line}</span><br>`;
+        html += '<br>';
     }
 
     asciiArt.innerHTML = html;

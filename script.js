@@ -15,7 +15,7 @@ const CONFIG = {
     FAKE_INITIAL_DATE: '2026-03-15',
 
     // IMGUR IMAGE URL - Replace with your actual Imgur link
-    ASCII_IMAGE_URL: 'https://i.imgur.com/AbCdEfG.jpg',
+    ASCII_IMAGE_URL: 'https://imgur.com/a/8C08EkG',
 
     // LOCK PAGE - SUN MESSAGES (Compliments connected to Sun)
     SUN_MESSAGES: [

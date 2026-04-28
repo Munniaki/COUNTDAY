@@ -3,7 +3,7 @@
 // ============================================
 const CONFIG = {
     // TEST MODE - Set to true to show test bar
-    TEST_MODE: true,
+    TEST_MODE: false,
 
     // Target date for countdown (April 29, 2026)
     TARGET_DATE: new Date('2026-04-29T00:00:00').getTime(),

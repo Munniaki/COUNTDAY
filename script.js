@@ -15,7 +15,7 @@ const CONFIG = {
     FAKE_INITIAL_DATE: '2026-03-15',
 
     // IMGUR IMAGE URL - Replace with your actual Imgur link
-    ASCII_IMAGE_URL: 'https://imgur.com/a/8C08EkG',
+    ASCII_IMAGE_URL: 'https://i.imgur.com/AbCdEfG.jpg',
 
     // LOCK PAGE - SUN MESSAGES (Compliments connected to Sun)
     SUN_MESSAGES: [
@@ -252,7 +252,10 @@ function goToPage(pageNum) {
     } else if (pageNum === 1) {
         resetLetter();
         initFireflies();
-        initShakeDetection();
+        // Auto-open letter after a short delay
+        setTimeout(() => {
+            autoOpenLetter();
+        }, 1000);
     } else if (pageNum === 2) {
         resetInvestigation();
         initTaurusConstellation();
@@ -289,7 +292,7 @@ function initLockPage() {
     const sunWrapper = document.getElementById('sunWrapper');
     const moonWrapper = document.getElementById('moonWrapper');
 
-    
+    // Reset all backgrounds first
     if (dayBg) dayBg.classList.remove('active');
     if (nightBg) nightBg.classList.remove('active');
     if (cloudsContainer) cloudsContainer.classList.remove('active');
@@ -540,11 +543,40 @@ function initFireflies() {
     }
 }
 
+// NEW FUNCTION: Auto-open letter without shake
+function autoOpenLetter() {
+    const waxSeal = document.getElementById('waxSeal');
+    const book = document.getElementById('book');
+    const letter = document.getElementById('letter');
+    const shakeHint = document.getElementById('shakeHint');
+
+    // Hide shake hint since we're auto-opening
+    if (shakeHint) shakeHint.classList.remove('show');
+
+    // Break the wax seal
+    if (waxSeal && !waxSeal.classList.contains('broken')) {
+        waxSeal.classList.add('broken');
+    }
+
+    // Open book after seal breaks
+    setTimeout(() => {
+        if (book) book.classList.add('open');
+        
+        // Show letter and start typing after book opens
+        setTimeout(() => {
+            if (letter) {
+                letter.classList.add('show');
+                typeWriter();
+            }
+        }, 300);
+    }, 500);
+}
+
 function initShakeDetection() {
     const shakeHint = document.getElementById('shakeHint');
 
     setTimeout(() => {
-        if (shakeHint) shakeHint.classList.add('show');
+        if (shakeHint && !shakeDetected) shakeHint.classList.add('show');
     }, 1500);
 
     // MOBILE: Device motion shake detection
@@ -1187,7 +1219,7 @@ function preloadASCIIArtImage() {
 
     asciiImageElement.onload = function() {
         asciiImageLoaded = true;
-        console.log("Imgur image loaded successfully!");
+        console.log("Image loaded successfully!");
     };
 
     asciiImageElement.onerror = function() {
